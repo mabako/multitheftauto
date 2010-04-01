@@ -219,9 +219,8 @@ bool CStaticFunctionDefinitions::OutputChatBox ( const char* szText, unsigned ch
     Arguments.PushNumber ( ucRed );
     Arguments.PushNumber ( ucGreen );
     Arguments.PushNumber ( ucBlue );
-    g_pClientGame->GetRootEntity()->CallEvent ( "onClientChatMessage", Arguments, false );
-
-    m_pCore->ChatPrintfColor ( "%s", bColorCoded, ucRed, ucGreen, ucBlue, szText );
+    if ( g_pClientGame->GetRootEntity()->CallEvent ( "onClientChatMessage", Arguments, false ) )
+        m_pCore->ChatPrintfColor ( "%s", bColorCoded, ucRed, ucGreen, ucBlue, szText );
     return true;
 }
 

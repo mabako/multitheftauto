@@ -9,6 +9,7 @@
 *               Jax <>
 *               Cecill Etheredge <>
 *               Marcus Bauer <mabako@gmail.com>
+*               Florian Busse <flobu@gmx.net>
 *
 *  Multi Theft Auto is available from http://www.multitheftauto.com/
 *
@@ -24,12 +25,12 @@ void CLuaTimerManager::DoPulse ( CLuaMain* pLuaMain )
     for ( ; iter != m_TimerList.end (); )
     {
         CLuaTimer* pLuaTimer = *iter;
-		unsigned long ulStartTime = pLuaTimer->GetStartTime ();
-		unsigned long ulDelay = pLuaTimer->GetDelay ();
-		unsigned int uiRepeats = pLuaTimer->GetRepeats ();
+        unsigned long ulStartTime = pLuaTimer->GetStartTime ();
+        unsigned long ulDelay = pLuaTimer->GetDelay ();
+        unsigned int uiRepeats = pLuaTimer->GetRepeats ();
 
-        // Is the time up
-        if ( ulCurrentTime >= ( ulStartTime + ulDelay ) )
+        // Is the time up and is not being deleted
+        if ( !pLuaTimer->IsBeingDeleted() && ulCurrentTime >= ( ulStartTime + ulDelay ) )
         {
             pLuaTimer->ExecuteTimer ( pLuaMain );
 
@@ -66,6 +67,7 @@ void CLuaTimerManager::RemoveTimer ( CLuaTimer* pLuaTimer )
 
     if ( m_bIteratingList )
     {
+        pLuaTimer->SetBeingDeleted( true );
         m_TrashCan.push_back ( pLuaTimer );
     }
     else
@@ -128,24 +130,24 @@ CLuaTimer* CLuaTimerManager::AddTimer ( lua_State* luaVM )
         {
             // Grab the string argument, start-time, delay and repeats
             unsigned long ulTimeDelay = static_cast < unsigned long > ( lua_tonumber ( luaVM, 2 ) );
-			unsigned int uiRepeats = static_cast < unsigned int > ( lua_tonumber ( luaVM, 3 ) );
+            unsigned int uiRepeats = static_cast < unsigned int > ( lua_tonumber ( luaVM, 3 ) );
 
-			// Check for the minimum interval
-			if ( ulTimeDelay < LUA_TIMER_MIN_INTERVAL ) return NULL;
+            // Check for the minimum interval
+            if ( ulTimeDelay < LUA_TIMER_MIN_INTERVAL ) return NULL;
 
-			// Grab the arguments from argument 4 and up
+            // Grab the arguments from argument 4 and up
             CLuaArguments Arguments;
             Arguments.ReadArguments ( luaVM, 4 );
 
-			int iLuaFunction = luaM_toref ( luaVM, 1 );
+            int iLuaFunction = luaM_toref ( luaVM, 1 );
 
-			if ( iLuaFunction != LUA_REFNIL )
+            if ( iLuaFunction != LUA_REFNIL )
             {
                 // Add the timer
                 CLuaTimer* pLuaTimer = new CLuaTimer ( iLuaFunction, Arguments );
                 pLuaTimer->SetStartTime ( GetTime () );
-				pLuaTimer->SetDelay ( ulTimeDelay );
-				pLuaTimer->SetRepeats ( uiRepeats );
+                pLuaTimer->SetDelay ( ulTimeDelay );
+                pLuaTimer->SetRepeats ( uiRepeats );
                 m_TimerList.push_back ( pLuaTimer );
                 return pLuaTimer;
             }
@@ -156,25 +158,25 @@ CLuaTimer* CLuaTimerManager::AddTimer ( lua_State* luaVM )
 
 void CLuaTimerManager::GetTimers ( unsigned long ulTime, CLuaMain* pLuaMain )
 {
-	assert ( pLuaMain );
+    assert ( pLuaMain );
 
-	unsigned long ulCurrentTime = GetTime();
+    unsigned long ulCurrentTime = GetTime();
     // Add all the timers to the table
     unsigned int uiIndex = 0;
-	list < CLuaTimer* > ::iterator iter = m_TimerList.begin ();
-	for ( ; iter != m_TimerList.end () ; iter++ )
-	{
-		// If the time left is less than the time specified, or the time specifed is 0
-		unsigned long ulTimeLeft = ( (*iter)->GetStartTime () + (*iter)->GetDelay () ) - ulCurrentTime;
-		if ( ulTime == 0 || ulTimeLeft <= ulTime )
-		{
-			// Add it to the table
-			lua_State* luaVM = pLuaMain->GetVirtualMachine ();
-			lua_pushnumber ( luaVM, ++uiIndex );
-			lua_pushtimer ( luaVM, *iter );
-			lua_settable ( luaVM, -3 );
-		}
-	}
+    list < CLuaTimer* > ::iterator iter = m_TimerList.begin ();
+    for ( ; iter != m_TimerList.end () ; iter++ )
+    {
+        // If the time left is less than the time specified, or the time specifed is 0
+        unsigned long ulTimeLeft = ( (*iter)->GetStartTime () + (*iter)->GetDelay () ) - ulCurrentTime;
+        if ( ulTime == 0 || ulTimeLeft <= ulTime )
+        {
+            // Add it to the table
+            lua_State* luaVM = pLuaMain->GetVirtualMachine ();
+            lua_pushnumber ( luaVM, ++uiIndex );
+            lua_pushtimer ( luaVM, *iter );
+            lua_settable ( luaVM, -3 );
+        }
+    }
 }
 
 
@@ -183,14 +185,14 @@ void CLuaTimerManager::TakeOutTheTrash ( void )
     list < CLuaTimer* > ::iterator iter = m_TrashCan.begin ();
     for ( ; iter != m_TrashCan.end () ; iter++ )
     {
-		// Delete the object
+        // Delete the object
         CLuaTimer* pTimer = *iter;
-		if ( Exists ( pTimer ) )
+        if ( Exists ( pTimer ) )
         {
             if ( !m_TimerList.empty() ) m_TimerList.remove ( pTimer );
             delete pTimer;
         }
     }
-	m_TrashCan.clear ();
+    m_TrashCan.clear ();
 }
 

@@ -33,6 +33,14 @@ ASE::ASE ( CMainConfig* pMainConfig, CPlayerManager* pPlayerManager, unsigned sh
     m_pMainConfig = pMainConfig;
     m_pPlayerManager = pPlayerManager;
 
+    m_uiFullLastPlayerCount = 0;
+    m_llFullLastTime = 0;
+    m_lFullMinInterval = 10 * 1000;     // Update full query cache after 10 seconds
+
+    m_uiLightLastPlayerCount = 0;
+    m_llLightLastTime = 0;
+    m_lLightMinInterval = 10 * 1000;     // Update light query cache after 10 seconds
+
     m_strGameType = "MTA:SA";
     m_strMapName = "None";
     if ( szServerIP )
@@ -89,7 +97,7 @@ void ASE::DoPulse ( void )
 {
     sockaddr_in SockAddr;
 #ifndef WIN32
-	socklen_t nLen = sizeof ( sockaddr );
+    socklen_t nLen = sizeof ( sockaddr );
 #else
     int nLen = sizeof ( sockaddr );
 #endif
@@ -107,17 +115,17 @@ void ASE::DoPulse ( void )
         {
             case 's':
             { // ASE protocol query
-                strReply = QueryFull ();
+                strReply = QueryFullCached ();
                 break;
             }
             case 'b':
             { // Our own lighter query for ingame browser
-                strReply = QueryLight ();
+                strReply = QueryLightCached ();
                 break;
             }
             case 'r':
             { // Our own lighter query for ingame browser - Release version only
-                strReply = QueryLight ();
+                strReply = QueryLightCached ();
                 break;
             }
             case 'v':
@@ -135,11 +143,27 @@ void ASE::DoPulse ( void )
             /*int sent =*/ sendto ( m_Socket,
                                 strReply.c_str(),
                                 strReply.length(),
-						        0,
-						        (sockaddr*)&SockAddr,
-						        nLen );
+                                0,
+                                (sockaddr*)&SockAddr,
+                                nLen );
         }
     }
+}
+
+
+// Protect against a flood of server queries.
+// Send cached version unless player count has changed, or last re-cache is older than m_lFullMinInterval
+const std::string& ASE::QueryFullCached ( void )
+{
+    long long llTime = GetTickCount64_ ();
+    unsigned int uiPlayerCount = m_pPlayerManager->CountJoined ();
+    if ( uiPlayerCount != m_uiFullLastPlayerCount || llTime - m_llFullLastTime > m_lFullMinInterval || m_strFullCached == "" )
+    {
+        m_strFullCached = QueryFull ();
+        m_llFullLastTime = llTime;
+        m_uiFullLastPlayerCount = uiPlayerCount;
+    }
+    return m_strFullCached;
 }
 
 
@@ -225,18 +249,36 @@ std::string ASE::QueryFull ( void )
             reply << ( unsigned char ) 1;
             // skin (skip)
             reply << ( unsigned char ) 1;
-            // score (skip)
-            reply << ( unsigned char ) 1;
+            // score
+            const std::string& strScore = pPlayer->GetAnnounceValue ( "Score" );
+            reply << ( unsigned char ) ( strScore.length () + 1 );
+            reply << strScore.c_str ();
             // ping
             _snprintf ( szTemp, 255, "%u", pPlayer->GetPing () );
             reply << ( unsigned char ) ( strlen ( szTemp ) + 1 );
             reply << szTemp;
             // time (skip)
             reply << ( unsigned char ) 1;
-	    }
+        }
     }
 
     return reply.str();
+}
+
+
+// Protect against a flood of server queries.
+// Send cached version unless player count has changed, or last re-cache is older than m_lLightMinInterval
+const std::string& ASE::QueryLightCached ( void )
+{
+    long long llTime = GetTickCount64_ ();
+    unsigned int uiPlayerCount = m_pPlayerManager->CountJoined ();
+    if ( uiPlayerCount != m_uiLightLastPlayerCount || llTime - m_llLightLastTime > m_lLightMinInterval || m_strLightCached == "" )
+    {
+        m_strLightCached = QueryLight ();
+        m_llLightLastTime = llTime;
+        m_uiLightLastPlayerCount = uiPlayerCount;
+    }
+    return m_strLightCached;
 }
 
 
@@ -288,7 +330,7 @@ std::string ASE::QueryLight ( void )
                 strPlayerName = pPlayer->GetNick ();
             reply << ( unsigned char ) ( strPlayerName.length () + 1 );
             reply << strPlayerName.c_str ();
-	    }
+        }
     }
 
     return reply.str();
@@ -343,11 +385,11 @@ void ASE::SetRuleValue ( const char* szKey, const char* szValue )
                 }
                 else
                 {
-					// Remove from the list
+                    // Remove from the list
                     delete pRule;
                     m_Rules.erase ( iter );
                 }
-				// And return
+                // And return
                 return;
             }
         }

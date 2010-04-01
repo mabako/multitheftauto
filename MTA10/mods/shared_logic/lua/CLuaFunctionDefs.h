@@ -697,6 +697,7 @@ public:
     LUA_DECLARE ( Md5 );
     LUA_DECLARE ( GetPacketInfo );
     LUA_DECLARE ( IsSAMPInstalled );
+    LUA_DECLARE ( SetSyncQuality );
 
 #ifdef MTA_VOICE
     // Voice funcs

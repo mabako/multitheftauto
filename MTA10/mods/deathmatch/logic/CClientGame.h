@@ -343,6 +343,8 @@ public:
     bool                                SetCloudsEnabled                ( bool bEnabled );
     bool                                GetCloudsEnabled                ( void );
 
+    bool                                SetSyncQuality                  ( float fSyncQuality );
+
     inline CTransferBox*                GetTransferBox                  ( void )                        { return m_pTransferBox; };
 
     void                                ChangeVehicleWeapon             ( bool bNext );

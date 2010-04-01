@@ -33,6 +33,10 @@ class CNetAPI;
 #define TICK_RATE 100
 #define CAM_SYNC_RATE 500
 
+#define MIN_SYNC_QUALITY 0.05f
+#define MAX_SYNC_QUALITY 1.0f
+#define DEFAULT_SYNC_QUALITY 1.0f
+
 enum eServerRPCFunctions;
 
 class CNetAPI
@@ -82,6 +86,7 @@ public:
 
     void                    RPC                             ( eServerRPCFunctions ID, NetBitStreamInterface * pBitStream = NULL, NetPacketOrdering packetOrdering = PACKET_ORDERING_GAME );
 
+    bool                    SetSyncQuality                  ( float fSyncQuality = DEFAULT_SYNC_QUALITY );
 private:
     CClientManager*         m_pManager;
     CClientPlayerManager*   m_pPlayerManager;
@@ -101,6 +106,9 @@ private:
     CVector                 m_vecLastSentCameraLookAt;
 
     CInterpolator<CVector>  m_Interpolator;
+
+    unsigned long           m_ulTickRate;
+    unsigned long           m_ulCamSyncRate;
 };
 
 enum eServerRPCFunctions

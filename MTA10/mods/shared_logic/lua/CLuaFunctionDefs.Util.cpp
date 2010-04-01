@@ -521,3 +521,16 @@ int CLuaFunctionDefs::IsSAMPInstalled ( lua_State* luaVM )
     lua_pushboolean ( luaVM, bExists );
     return 1;
 }
+
+int CLuaFunctionDefs::SetSyncQuality ( lua_State* luaVM )
+{
+    if ( lua_type ( luaVM, 1 ) == LUA_TNUMBER )
+    {
+        bool bSuccess = g_pClientGame->SetSyncQuality ( static_cast < float > ( lua_tonumber ( luaVM, 1 ) ) );
+        lua_pushboolean ( luaVM, bSuccess );
+        return 1;
+    }
+
+    lua_pushboolean ( luaVM, false );
+    return 1;
+}

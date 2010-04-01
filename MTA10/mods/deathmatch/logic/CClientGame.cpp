@@ -4785,6 +4785,11 @@ bool CClientGame::GetCloudsEnabled ( void )
     return m_bCloudsEnabled;
 }
 
+bool CClientGame::SetSyncQuality ( float fSyncQuality )
+{
+    return m_pNetAPI->SetSyncQuality ( fSyncQuality );
+}
+
 #pragma code_seg(".text")
 bool CClientGame::VerifySADataFiles ( int iEnableClientChecks )
 {

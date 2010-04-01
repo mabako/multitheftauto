@@ -893,6 +893,7 @@ void CLuaManager::LoadCFunctions ( void )
     CLuaCFunctions::AddFunction ( "md5", CLuaFunctionDefs::Md5 );
     CLuaCFunctions::AddFunction ( "getPacketInfo", CLuaFunctionDefs::GetPacketInfo );
     CLuaCFunctions::AddFunction ( "isSAMPInstalled", CLuaFunctionDefs::IsSAMPInstalled );
+    CLuaCFunctions::AddFunction ( "setSyncQuality", CLuaFunctionDefs::IsSAMPInstalled );
 
 #ifdef MTA_VOICE
     // Voice funcs

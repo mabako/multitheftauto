@@ -37,6 +37,7 @@ CNetAPI::CNetAPI ( CClientManager* pManager )
     m_pLastSentCameraTarget = NULL;
     m_ulLastCameraSyncTime = 0;
     m_bStoredReturnSync = false;
+    SetSyncQuality( );
 }
 
 
@@ -407,7 +408,7 @@ bool CNetAPI::IsSmallKeySyncNeeded ( CClientPed* pPlayerModel )
 bool CNetAPI::IsPureSyncNeeded ( void )
 {
     unsigned long ulCurrentTime = CClientTime::GetTime ();
-    if ( ulCurrentTime >= m_ulLastPuresyncTime + TICK_RATE )
+    if ( ulCurrentTime >= m_ulLastPuresyncTime + m_ulTickRate )
     {
         m_ulLastPuresyncTime = ulCurrentTime;
         return true;
@@ -430,7 +431,7 @@ bool CNetAPI::IsCameraSyncNeeded ()
         {
             // Has it been long enough since our last sync?
             unsigned long ulCurrentTime = CClientTime::GetTime ();
-            if ( ulCurrentTime >= m_ulLastCameraSyncTime + CAM_SYNC_RATE )
+            if ( ulCurrentTime >= m_ulLastCameraSyncTime + m_ulCamSyncRate )
             {
                 m_ulLastCameraSyncTime = ulCurrentTime;
                 m_bLastSentCameraMode = true;
@@ -450,7 +451,7 @@ bool CNetAPI::IsCameraSyncNeeded ()
             // Something changed (mode has become "player", or different target)
             // Has it been long enough since our last sync?
             unsigned long ulCurrentTime = CClientTime::GetTime ();
-            if ( ulCurrentTime >= m_ulLastCameraSyncTime + CAM_SYNC_RATE )
+            if ( ulCurrentTime >= m_ulLastCameraSyncTime + m_ulCamSyncRate )
             {
                 m_ulLastCameraSyncTime = ulCurrentTime;
                 m_bLastSentCameraMode = false;
@@ -1640,4 +1641,15 @@ void CNetAPI::RPC ( eServerRPCFunctions ID, NetBitStreamInterface * pBitStream, 
         g_pNet->SendPacket ( PACKET_ID_RPC, pRPCBitStream, PACKET_PRIORITY_MEDIUM, PACKET_RELIABILITY_RELIABLE_ORDERED, packetOrdering );
         g_pNet->DeallocateNetBitStream ( pRPCBitStream );
     }
+}
+
+bool CNetAPI::SetSyncQuality ( float fSyncQuality )
+{
+    if ( fSyncQuality >= MIN_SYNC_QUALITY && fSyncQuality <= MAX_SYNC_QUALITY )
+    {
+        m_ulTickRate = static_cast < unsigned long > ( TICK_RATE * 1 / fSyncQuality );
+        m_ulCamSyncRate = static_cast < unsigned long > ( CAM_SYNC_RATE * 1 / fSyncQuality );
+        return true;
+    }
+    return false;
 }

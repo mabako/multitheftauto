@@ -511,3 +511,13 @@ int CLuaFunctionDefs::GetVersion ( lua_State* luaVM )
 
     return 1;
 }
+
+int CLuaFunctionDefs::IsSAMPInstalled ( lua_State* luaVM )
+{
+    std::string strPath = g_pCore->GetGTAInstallRoot ( );
+    strPath += "\\samp.exe";
+
+    bool bExists = DoesFileExist ( strPath.c_str ( ) );
+    lua_pushboolean ( luaVM, bExists );
+    return 1;
+}

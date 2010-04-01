@@ -178,6 +178,8 @@ inline float GetOffsetDegrees ( float a, float b )
 
 
 bool            DoesFileExist               ( const char* szFilename );
+bool            DeleteFileEx                ( const char* szFilename );
+bool            DeleteFileEx                ( std::string strFilename );
 
 // Misc utility functions
 char*           ReplaceAnyStringOccurrence  ( char* szBuffer, const char* szWhat, const char* szWith, size_t sizeMax );

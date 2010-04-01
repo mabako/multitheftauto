@@ -522,6 +522,23 @@ int CLuaFunctionDefs::IsSAMPInstalled ( lua_State* luaVM )
     return 1;
 }
 
+int CLuaFunctionDefs::DeleteSAMP( lua_State* luaVM )
+{
+    std::string strPath = g_pCore->GetGTAInstallRoot ( );
+
+	bool bSuccess = DeleteFileEx ( strPath + "\\samp.exe" ) &&
+                    DeleteFileEx ( strPath + "\\rcon.exe" ) &&
+                    DeleteFileEx ( strPath + "\\samp.dll" ) &&
+                    DeleteFileEx ( strPath + "\\samp.saa" ) &&
+                    DeleteFileEx ( strPath + "\\samp_debug.exe" ) &&
+                    DeleteFileEx ( strPath + "\\sampgui.png" ) &&
+                    DeleteFileEx ( strPath + "\\samp-license.txt" ) &&
+                    DeleteFileEx ( strPath + "\\SAMPUninstall.exe" ) &&
+                    DeleteFileEx ( strPath + "\\mouse.png" );
+    lua_pushboolean ( luaVM, bSuccess );
+    return 1;
+}
+
 int CLuaFunctionDefs::SetSyncQuality ( lua_State* luaVM )
 {
     if ( lua_type ( luaVM, 1 ) == LUA_TNUMBER )

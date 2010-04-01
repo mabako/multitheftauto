@@ -94,6 +94,26 @@ bool DoesFileExist ( const char* szFilename )
 }
 
 
+bool DeleteFileEx ( const char* szFileName )
+{
+    if ( DoesFileExist ( szFileName ) )
+    {
+        if ( DeleteFile ( szFileName ) )
+            return true;
+
+        SetLastError ( 0 );
+        return false;
+    }
+    return false;
+}
+
+
+bool DeleteFileEx ( std::string strFilename )
+{
+    return DeleteFileEx ( strFilename.c_str ( ) );
+}
+
+
 char* ReplaceAnyStringOccurrence ( char* szBuffer, const char* szWhat, const char* szWith, size_t sizeMax )
 {
     // TODO: Check for max size

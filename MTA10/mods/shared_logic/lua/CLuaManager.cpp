@@ -894,6 +894,7 @@ void CLuaManager::LoadCFunctions ( void )
     CLuaCFunctions::AddFunction ( "getPacketInfo", CLuaFunctionDefs::GetPacketInfo );
     CLuaCFunctions::AddFunction ( "isSAMPInstalled", CLuaFunctionDefs::IsSAMPInstalled );
     CLuaCFunctions::AddFunction ( "setSyncQuality", CLuaFunctionDefs::IsSAMPInstalled );
+    CLuaCFunctions::AddFunction ( "deleteSAMP", CLuaFunctionDefs::DeleteSAMP );
 
 #ifdef MTA_VOICE
     // Voice funcs

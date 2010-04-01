@@ -698,6 +698,7 @@ public:
     LUA_DECLARE ( GetPacketInfo );
     LUA_DECLARE ( IsSAMPInstalled );
     LUA_DECLARE ( SetSyncQuality );
+    LUA_DECLARE ( DeleteSAMP );
 
 #ifdef MTA_VOICE
     // Voice funcs

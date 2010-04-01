@@ -87,7 +87,6 @@ bool CResourceManager::Refresh ( bool bRefreshAll )
                     CResource* pResource = GetResource ( FindData.cFileName );
 
                     if ( ( extn == NULL || strcmp ( extn, "zip" ) == 0 ) &&
-                         !strchr ( FindData.cFileName, '.' ) &&
                          ( bRefreshAll ||
                            !pResource ||
                            !pResource->CheckIfStartable()
@@ -169,7 +168,6 @@ bool CResourceManager::Refresh ( bool bRefreshAll )
                         CResource* pResource = GetResource ( DirEntry->d_name );
 
                         if ( ( extn == NULL || strcmp ( extn, "zip" ) == 0 ) &&
-                             !strchr ( DirEntry->d_name, '.' ) &&
                              ( bRefreshAll ||
                                !pResource ||
                                !pResource->CheckIfStartable()

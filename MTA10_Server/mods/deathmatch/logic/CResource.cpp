@@ -2129,6 +2129,14 @@ bool CResource::CheckIfStartable ( void )
     // it spams it every few seconds
     if ( m_bLoaded == false ) return false;
 
+    // Check that resource has no dots in filename
+    if ( strchr ( m_strResourceName.c_str ( ), '.' ) )
+    {
+        m_bLoaded = false;
+        m_strFailureReason = std::string ( "Resource name can't contrain dot: " ) + m_strResourceName;
+        return false;
+    }
+
     // Check that the included resources aren't circular
     m_strCircularInclude = "";
     vector < CResource * > vecCircular;

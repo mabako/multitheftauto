@@ -554,6 +554,7 @@ void CLuaManager::LoadCFunctions ( void )
     CLuaCFunctions::AddFunction ( "dxDrawText", CLuaFunctionDefs::dxDrawText );
     CLuaCFunctions::AddFunction ( "dxDrawRectangle", CLuaFunctionDefs::dxDrawRectangle );
     CLuaCFunctions::AddFunction ( "dxDrawImage", CLuaFunctionDefs::dxDrawImage );
+    CLuaCFunctions::AddFunction ( "dxDrawImageSection", CLuaFunctionDefs::dxDrawImageSection );
     CLuaCFunctions::AddFunction ( "dxGetTextWidth", CLuaFunctionDefs::dxGetTextWidth );
     CLuaCFunctions::AddFunction ( "dxGetFontHeight", CLuaFunctionDefs::dxGetFontHeight );
 
@@ -850,6 +851,9 @@ void CLuaManager::LoadCFunctions ( void )
     // Projectile funcs
     CLuaCFunctions::AddFunction ( "createProjectile", CLuaFunctionDefs::CreateProjectile );
     CLuaCFunctions::AddFunction ( "getProjectileType", CLuaFunctionDefs::GetProjectileType );
+	CLuaCFunctions::AddFunction ( "getProjectileTarget", CLuaFunctionDefs::GetProjectileTarget );
+	CLuaCFunctions::AddFunction ( "getProjectileCreator", CLuaFunctionDefs::GetProjectileCreator );
+	CLuaCFunctions::AddFunction ( "getProjectileForce", CLuaFunctionDefs::GetProjectileForce );
 
     // Shape create funcs
     CLuaCFunctions::AddFunction ( "createColCircle", CLuaFunctionDefs::CreateColCircle );

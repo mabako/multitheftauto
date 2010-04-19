@@ -451,6 +451,7 @@ public:
     LUA_DECLARE ( dxDrawText );
     LUA_DECLARE ( dxDrawRectangle );
     LUA_DECLARE ( dxDrawImage );
+    LUA_DECLARE ( dxDrawImageSection );
     LUA_DECLARE ( dxGetTextWidth );
     LUA_DECLARE ( dxGetFontHeight );
 
@@ -654,6 +655,9 @@ public:
     // Projectile funcs
     LUA_DECLARE ( CreateProjectile );
     LUA_DECLARE ( GetProjectileType );
+	LUA_DECLARE ( GetProjectileTarget );
+	LUA_DECLARE ( GetProjectileCreator );
+	LUA_DECLARE ( GetProjectileForce );
 
     // Shape create funcs
     LUA_DECLARE ( CreateColCircle );
